@@ -1,0 +1,133 @@
+spring:
+  application:
+    name: audit-log-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  web:
+    locale: en
+    locale-resolver: fixed
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/audit_log}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: audit-log-pool
+      minimum-idle: ${DB_POOL_MIN_IDLE:2}
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
+      connection-timeout: 30000
+      validation-timeout: 5000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-disabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:audit-log-consumer}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: com.mac.audit.entities.dto
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.mac.audit.entities.dto.AuditEventRequest
+    listener:
+      ack-mode: record
+      concurrency: ${KAFKA_CONSUMER_CONCURRENCY:3}
+      missing-topics-fatal: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: true
+        acks: all
+        retries: 10
+
+server:
+  port: ${SERVER_PORT:9003}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+audit:
+  kafka:
+    enabled: ${AUDIT_KAFKA_ENABLED:true}
+    topic: ${AUDIT_KAFKA_TOPIC:centralized-audit.requested}
+    dead-letter-topic: ${AUDIT_KAFKA_DLT_TOPIC:centralized-audit.requested.dlt}
+    retry-interval-ms: ${AUDIT_KAFKA_RETRY_INTERVAL_MS:1000}
+    max-retries: ${AUDIT_KAFKA_MAX_RETRIES:2}
+  query:
+    max-range: ${AUDIT_QUERY_MAX_RANGE:P31D}
+
+sdk:
+  timezone: ${APP_TIMEZONE:Asia/Jakarta}
+  web:
+    exception-handler:
+      enabled: true
+  logging:
+    structured:
+      enabled: true
+      format: ecs
+      auto-configure-format: true
+      trace-header: X-Correlation-Id
+      trace-response-header: true
+    aspect:
+      enabled: true
+      packages: com.mac.audit.service,com.mac.audit.repository
+  security:
+    enabled: ${SDK_SECURITY_ENABLED:true}
+    csrf-disabled: true
+    jwt-issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:8080/realms/audit}
+    session-creation-policy: STATELESS
+    permit-all-paths:
+      - /actuator/health/**
+      - /actuator/info/**
+      - /v3/api-docs/**
+      - /swagger-ui.html
+      - /swagger-ui/**
+      - /error
+    method-security-enabled: ${SDK_METHOD_SECURITY_ENABLED:true}
+    cors:
+      enabled: ${SDK_CORS_ENABLED:false}
+  openapi:
+    enabled: true
+    title: Centralized Audit Log API
+    description: Read-only API for centralized user activity audit records
+    version: 1.0.0
+
+jwt:
+  auth:
+    converter:
+      principle-attribute: preferred_username
+      resource-id: audit-log
+
+management:
+  endpoints.web.exposure.include: health,info,prometheus,metrics
+  endpoint.health:
+    probes.enabled: true
+    show-details: when-authorized
+  metrics.tags:
+    application: ${spring.application.name}
+    environment: ${SPRING_PROFILES_ACTIVE:local}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.mac.audit: ${LOG_LEVEL_APPLICATION:INFO}
+  structured:
+    format:
+      console: ecs
+      file: ecs
+    ecs.service.environment: ${SPRING_PROFILES_ACTIVE:local}

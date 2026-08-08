@@ -1,0 +1,8 @@
+{
+  "service": "audit-log-service",
+  "examples": [
+    "kafka-audit-event.json",
+    "find-audit-logs.json",
+    "get-audit-log.json"
+  ]
+}

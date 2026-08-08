@@ -1,0 +1,6 @@
+sdk:
+  security:
+    enabled: false
+    method-security-enabled: false
+    cors:
+      enabled: false
