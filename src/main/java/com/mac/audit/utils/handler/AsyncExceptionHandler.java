@@ -1,5 +1,7 @@
 package com.mac.audit.utils.handler;
 
+import com.mac.audit.entities.model.ErrorAlert;
+import com.mac.audit.service.ErrorAlertNotifier;
 import com.mac.sdk_util.entities.constant.LogFields;
 import com.mac.sdk_util.utils.StructuredLog;
 import java.util.*;
@@ -11,6 +13,11 @@ import org.springframework.stereotype.Component;
 public class AsyncExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(AsyncExceptionHandler.class);
+    private final ErrorAlertNotifier notifier;
+
+    public AsyncExceptionHandler(ErrorAlertNotifier notifier) {
+        this.notifier = notifier;
+    }
 
     public void handle(String traceId, String dataset, String source, String action,
             Map<String, Object> additionalFields, Throwable exception) {
@@ -28,5 +35,6 @@ public class AsyncExceptionHandler {
         if (additionalFields != null) fields.putAll(additionalFields);
         StructuredLog.withMdc(context,
                 () -> StructuredLog.error(LOG, "Asynchronous operation failed", fields, exception));
+        notifier.send(ErrorAlert.failure(context.get(LogFields.TRACE_ID), source, action));
     }
 }

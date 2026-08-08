@@ -10,6 +10,7 @@ endpoints for audit investigation and monitoring.
 - Validates every Kafka payload before persistence.
 - Uses `eventId` as an idempotency key; duplicate delivery does not create a second row.
 - Retries transient Kafka listener failures and publishes exhausted records to a dead-letter topic.
+- Sends failures from HTTP and asynchronous/Kafka boundaries to `centralized_alert` over REST.
 - Stores flexible metadata as PostgreSQL `JSONB`.
 - Exposes paginated filtering by time, source, actor, action, resource, and outcome.
 - Uses `sdk-util` response envelopes, JWT security, global REST exceptions, trace IDs, ECS logging,
@@ -39,6 +40,10 @@ Business service
     -> AuditLogService
     -> INSERT ... ON CONFLICT DO NOTHING
     -> PostgreSQL audit_log
+
+HTTP 5xx / exhausted Kafka failure
+    -> POST centralized_alert /api/v1/alert
+    -> email delivery managed by centralized_alert
 
 Investigator / monitoring client
     -> JWT-protected REST API
@@ -99,6 +104,10 @@ Copy values from `.env.example` to your local environment. Important variables:
 | `AUDIT_KAFKA_DLT_TOPIC` | `centralized-audit.requested.dlt` | Exhausted event topic |
 | `AUDIT_KAFKA_MAX_RETRIES` | `2` | Retries after the first listener attempt |
 | `AUDIT_QUERY_MAX_RANGE` | `P31D` | Maximum REST query time range |
+| `AUDIT_ERROR_ALERT_ENABLED` | `true` | Enable centralized error alerts |
+| `CENTRALIZED_ALERT_URL` | `http://localhost:9001/api/v1/alert` | Central alert API endpoint |
+| `AUDIT_ERROR_ALERT_RECIPIENTS` | `ops@example.com` | Comma-separated alert recipients |
+| `AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER` | empty | Full outbound Authorization header |
 | `OAUTH2_ISSUER_URI` | local audit realm | JWT issuer in non-local profiles |
 
 The default `local` profile disables SDK security for development. Use a non-local profile and a
@@ -143,6 +152,18 @@ authorization headers, payment card data, or full request bodies inside `metadat
 Invalid input is not retried. Transient failures are retried using fixed backoff and then sent to
 the configured DLT. Kafka uses record acknowledgement, so a successful idempotent insert completes
 the record before its offset advances.
+
+## Error alert integration
+
+The service submits a priority-1 TEXT alert to `centralized_alert` when an HTTP request escapes with
+an exception or finishes with a 5xx response, and when asynchronous processing reports a terminal
+failure. The Kafka retry/DLT recoverer uses that asynchronous boundary, so an exhausted listener
+failure also creates an alert. Validation errors and other 4xx responses do not create alerts.
+
+Alert delivery is best effort: a timeout, connection error, or non-2xx response is logged without
+masking or retrying the original failure. Configure `AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER` when
+the central endpoint requires a service token. Secrets and original exception details are excluded
+from the alert body. See `src/main/resources/json/error-alert-request.json` for the outbound contract.
 
 ## REST API
 

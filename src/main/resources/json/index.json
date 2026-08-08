@@ -3,6 +3,7 @@
   "examples": [
     "kafka-audit-event.json",
     "find-audit-logs.json",
-    "get-audit-log.json"
+    "get-audit-log.json",
+    "error-alert-request.json"
   ]
 }

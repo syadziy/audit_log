@@ -1,0 +1,25 @@
+{
+  "direction": "outbound",
+  "method": "POST",
+  "url": "http://localhost:9001/api/v1/alert",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer <service-token>",
+    "X-Correlation-Id": "9c43e2c1-4220-4ff6-8078-fb7413d62fb6"
+  },
+  "requestBody": {
+    "sourceSystem": "AUDIT-LOG-SERVICE",
+    "idempotencyKey": "audit-error-consumeAuditEvent-9c43e2c1-4220-4ff6-8078-fb7413d62fb6",
+    "correlationId": "9c43e2c1-4220-4ff6-8078-fb7413d62fb6",
+    "senderEmail": "audit-log@example.com",
+    "senderName": "Audit Log Service",
+    "subject": "Audit log service error",
+    "body": "The audit log service failed while performing 'consumeAuditEvent' at the kafka boundary. Trace ID: 9c43e2c1-4220-4ff6-8078-fb7413d62fb6.",
+    "bodyType": "TEXT",
+    "priority": 1,
+    "recipients": [
+      { "type": "TO", "email": "ops@example.com" }
+    ],
+    "attachments": []
+  }
+}

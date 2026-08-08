@@ -70,6 +70,14 @@ audit:
     max-retries: ${AUDIT_KAFKA_MAX_RETRIES:2}
   query:
     max-range: ${AUDIT_QUERY_MAX_RANGE:P31D}
+  error-alert:
+    enabled: ${AUDIT_ERROR_ALERT_ENABLED:true}
+    endpoint: ${CENTRALIZED_ALERT_URL:http://localhost:9001/api/v1/alert}
+    sender-email: ${AUDIT_ERROR_ALERT_SENDER_EMAIL:audit-log@example.com}
+    sender-name: ${AUDIT_ERROR_ALERT_SENDER_NAME:Audit Log Service}
+    recipients: ${AUDIT_ERROR_ALERT_RECIPIENTS:ops@example.com}
+    authorization-header: ${AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER:}
+    timeout: ${AUDIT_ERROR_ALERT_TIMEOUT:PT5S}
 
 sdk:
   timezone: ${APP_TIMEZONE:Asia/Jakarta}

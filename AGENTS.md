@@ -3,8 +3,9 @@
 ## Project overview
 
 `audit-log` is a Java 21 Spring Boot service for centralized, append-only user activity auditing.
-It consumes validated Kafka events, persists them idempotently to PostgreSQL, and exposes a
-JWT-protected read-only investigation API.
+It consumes validated Kafka events, persists them idempotently to PostgreSQL, exposes a
+JWT-protected read-only investigation API, and reports terminal boundary failures to
+`centralized_alert` over REST.
 
 Core stack:
 
@@ -34,7 +35,7 @@ src/main/java/com/mac/audit/
 ├── repository/impl/        # JDBC persistence
 ├── service/impl/           # Audit ingestion and read logic
 ├── subscriber/             # Kafka listener boundary
-└── utils/handler/          # Async boundary error logging
+└── utils/handler/          # HTTP/async boundary error logging and alert dispatch
 
 src/main/resources/
 ├── db/migration/           # Versioned Flyway SQL
@@ -77,6 +78,8 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 - Invalid input is non-retryable. Transient infrastructure errors use configured retry and DLT.
 - Kafka listener errors are not handled by MVC `GlobalExceptionHandler`; keep the dedicated
   `CommonErrorHandler` and async structured logging boundary.
+- Terminal HTTP 5xx and exhausted asynchronous/Kafka failures must submit a sanitized alert to
+  `centralized_alert`; alert delivery failure must never replace the original failure.
 - Trace priority is payload `traceId`, Kafka key, then `eventId` for normal consumption. Error
   recovery also recognizes `X-Correlation-Id`.
 - Do not log Kafka payloads or arbitrary metadata.
