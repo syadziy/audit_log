@@ -8,6 +8,10 @@ spring:
   web:
     locale: en
     locale-resolver: fixed
+
+  # =========================
+  # DATABASE
+  # =========================
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/audit_log}
     username: ${DB_USERNAME:admin}
@@ -21,11 +25,19 @@ spring:
       validation-timeout: 5000
       idle-timeout: 600000
       max-lifetime: 1800000
+
+  # =========================
+  # FLYWAY
+  # =========================
   flyway:
     enabled: true
     locations: classpath:db/migration
     validate-on-migrate: true
     clean-disabled: true
+
+  # =========================
+  # KAFKA
+  # =========================
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
@@ -52,6 +64,9 @@ spring:
         acks: all
         retries: 10
 
+# =========================
+# SERVER
+# =========================
 server:
   port: ${SERVER_PORT:9003}
   shutdown: graceful
@@ -61,6 +76,9 @@ server:
     include-stacktrace: never
     include-exception: false
 
+# =========================
+# CENTRALIZED AUDIT CONFIG
+# =========================
 audit:
   kafka:
     enabled: ${AUDIT_KAFKA_ENABLED:true}
@@ -79,6 +97,9 @@ audit:
     authorization-header: ${AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER:}
     timeout: ${AUDIT_ERROR_ALERT_TIMEOUT:PT5S}
 
+# =========================
+# SHARED SDK
+# =========================
 sdk:
   timezone: ${APP_TIMEZONE:Asia/Jakarta}
   web:
@@ -115,12 +136,18 @@ sdk:
     description: Read-only API for centralized user activity audit records
     version: 1.0.0
 
+# =========================
+# JWT CONVERTER
+# =========================
 jwt:
   auth:
     converter:
       principle-attribute: preferred_username
       resource-id: audit-log
 
+# =========================
+# MANAGEMENT / ACTUATOR
+# =========================
 management:
   endpoints.web.exposure.include: health,info,prometheus,metrics
   endpoint.health:
@@ -130,6 +157,9 @@ management:
     application: ${spring.application.name}
     environment: ${SPRING_PROFILES_ACTIVE:local}
 
+# =========================
+# LOGGING
+# =========================
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}

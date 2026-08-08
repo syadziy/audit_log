@@ -70,6 +70,10 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 - Keep query time ranges bounded and paginated.
 - Use UTC `Instant` internally and `ZoneId` only when resolving date filters.
 - New schema changes require forward-only Flyway migrations; never edit an applied migration.
+- Organize every application YAML by major property group and precede each group with the
+  three-line banner used in this repository (`# =========================`, an uppercase section
+  name, and the same separator). Separate sections with one blank line and never change property
+  hierarchy merely for formatting.
 
 ## Kafka rules
 
