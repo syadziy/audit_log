@@ -149,7 +149,8 @@ Unit tests must not require Kafka, PostgreSQL, an identity provider, or network 
 ## Security
 
 - SDK security is enabled by default and disabled only by the local profile.
-- Do not broaden `permit-all-paths` to include audit data endpoints.
+- Do not declare or override `sdk.security.permit-all-paths` in this service. The canonical public
+  path policy is owned by `sdk_util`, and it must never expose audit data endpoints.
 - Do not add a REST write endpoint without explicit authentication, authorization, threat modeling,
   replay protection, and an approved reason to bypass Kafka.
 - Any JWT, CORS, public path, role, or security-default change requires focused security tests.
