@@ -111,10 +111,10 @@ Copy values from `.env.example` to your local environment. Important variables:
 | `CENTRALIZED_ALERT_URL` | `http://localhost:9001/api/v1/alert` | Central alert API endpoint |
 | `AUDIT_ERROR_ALERT_RECIPIENTS` | `ops@example.com` | Comma-separated alert recipients |
 | `AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER` | empty | Full outbound Authorization header |
-| `OAUTH2_ISSUER_URI` | local audit realm | JWT issuer in non-local profiles |
+| `OAUTH2_ISSUER_URI` | `http://localhost:9005` | `usermanagement` JWT issuer |
 
 The default `local` profile disables SDK security for development. Use a non-local profile and a
-real issuer for shared environments.
+reachable `usermanagement` issuer for shared environments.
 
 ## Run
 
