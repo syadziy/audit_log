@@ -69,6 +69,8 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 - Use `INSERT ... ON CONFLICT DO NOTHING` for at-least-once Kafka delivery.
 - Keep query time ranges bounded and paginated.
 - Use UTC `Instant` internally and `ZoneId` only when resolving date filters.
+- Keep the JVM, JDBC session, persisted timestamps, logs, and API timestamps in UTC. Regional
+  conversion belongs only at an explicit presentation boundary.
 - New schema changes require forward-only Flyway migrations; never edit an applied migration.
 - Organize every application YAML by major property group and precede each group with the
   three-line banner used in this repository (`# =========================`, an uppercase section

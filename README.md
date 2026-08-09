@@ -4,6 +4,9 @@
 stores them in an append-only PostgreSQL audit table. It also exposes authenticated, read-only REST
 endpoints for audit investigation and monitoring.
 
+JVM, JDBC session, persisted timestamps, logs, and API timestamps use UTC by default through
+`APP_TIMEZONE=UTC`.
+
 ## Main behavior
 
 - Consumes `AuditEventRequest` from `centralized-audit.requested`.
@@ -201,6 +204,19 @@ mvn clean verify
 `mvn clean verify` fails below 90% line coverage. The HTML report is generated at
 `target/site/jacoco/index.html`. The PostgreSQL/Flyway integration test uses Testcontainers when
 Docker is available and is skipped otherwise; unit tests do not require Docker or network access.
+
+## Docker
+
+Build JAR terlebih dahulu, kemudian buat runtime image Java 21:
+
+```bash
+mvn clean package
+docker build -t audit-log:1.0.0 .
+docker run --rm --env-file .env -p 9003:9003 audit-log:1.0.0
+```
+
+Isi `.env` dari `.env.example`. Gunakan hostname service pada Docker network untuk PostgreSQL,
+Kafka, dan `centralized_alert`; jangan gunakan `localhost` untuk dependency container lain.
 
 ## Operational notes
 
