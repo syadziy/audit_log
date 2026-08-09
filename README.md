@@ -220,6 +220,8 @@ Kafka, dan `centralized_alert`; jangan gunakan `localhost` untuk dependency cont
 
 ## Operational notes
 
+- Path `/internal/**` tidak memerlukan JWT dan hanya boleh tersedia pada trusted internal network;
+  public ingress dan API Gateway tidak boleh membuat route ke path tersebut.
 - Rows are append-only from the application perspective; there are no update or delete APIs.
 - Retention, archival, legal hold, and database access policies must be defined per environment.
 - Restrict REST access to authorized audit/operations roles at the identity and gateway layers.
