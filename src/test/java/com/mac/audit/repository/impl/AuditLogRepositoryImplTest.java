@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mac.audit.entities.constant.AuditOutcome;
 import com.mac.audit.entities.model.*;
 import java.sql.*;
@@ -15,6 +12,9 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.*;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 class AuditLogRepositoryImplTest {
 
@@ -30,7 +30,7 @@ class AuditLogRepositoryImplTest {
         assertFalse(repository.insert(entry));
 
         ObjectMapper broken = mock(ObjectMapper.class);
-        when(broken.writeValueAsString(any())).thenThrow(new JsonProcessingException("bad") {});
+        when(broken.writeValueAsString(any())).thenThrow(new JacksonException("bad") {});
         assertThrows(IllegalArgumentException.class,
                 () -> new AuditLogRepositoryImpl(jdbc, broken).insert(entry));
     }
@@ -66,7 +66,7 @@ class AuditLogRepositoryImplTest {
         NamedParameterJdbcTemplate jdbc = mock(NamedParameterJdbcTemplate.class);
         ObjectMapper mapper = mock(ObjectMapper.class);
         when(mapper.readValue(anyString(), any(TypeReference.class)))
-                .thenThrow(new JsonProcessingException("bad") {});
+                .thenThrow(new JacksonException("bad") {});
         when(jdbc.query(anyString(), anyMap(), any(RowMapper.class)))
                 .thenAnswer(invocation -> List.of(invocation.<RowMapper<AuditLogEntry>>getArgument(2)
                         .mapRow(resultSet(entry(), "bad"), 0)));

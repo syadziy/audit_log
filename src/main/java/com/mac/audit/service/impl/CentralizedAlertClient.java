@@ -1,7 +1,5 @@
 package com.mac.audit.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mac.audit.config.properties.ErrorAlertProperties;
 import com.mac.audit.entities.model.ErrorAlert;
 import com.mac.audit.service.ErrorAlertNotifier;
@@ -16,6 +14,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class CentralizedAlertClient implements ErrorAlertNotifier {
@@ -60,7 +60,7 @@ public class CentralizedAlertClient implements ErrorAlertNotifier {
         }
     }
 
-    private String payload(ErrorAlert alert) throws JsonProcessingException {
+    private String payload(ErrorAlert alert) throws JacksonException {
         List<Map<String, String>> recipients = properties.recipients().stream()
                 .map(email -> Map.of("type", "TO", "email", email))
                 .toList();

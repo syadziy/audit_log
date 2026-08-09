@@ -7,7 +7,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mac.audit.config.properties.ErrorAlertProperties;
 import com.mac.audit.entities.model.ErrorAlert;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
 
 class CentralizedAlertClientTest {
 

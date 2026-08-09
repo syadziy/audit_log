@@ -1,8 +1,8 @@
 package com.mac.audit.repository.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import com.mac.audit.entities.constant.AuditOutcome;
 import com.mac.audit.entities.model.AuditLogEntry;
 import com.mac.audit.entities.model.AuditLogFilter;
@@ -127,7 +127,7 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
     private String writeMetadata(java.util.Map<String, Object> metadata) {
         try {
             return objectMapper.writeValueAsString(metadata);
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new IllegalArgumentException("Audit metadata cannot be serialized", exception);
         }
     }
@@ -136,7 +136,7 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
         if (json == null || json.isBlank()) return java.util.Map.of();
         try {
             return objectMapper.readValue(json, new TypeReference<>() {});
-        } catch (JsonProcessingException exception) {
+        } catch (JacksonException exception) {
             throw new IllegalStateException("Stored audit metadata cannot be read", exception);
         }
     }
