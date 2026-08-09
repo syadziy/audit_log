@@ -70,7 +70,7 @@ spring:
 # SERVER
 # =========================
 server:
-  port: ${SERVER_PORT:9003}
+  port: ${SERVER_PORT:9004}
   shutdown: graceful
   servlet:
     context-path: /
@@ -94,7 +94,7 @@ audit:
     max-range: ${AUDIT_QUERY_MAX_RANGE:P31D}
   error-alert:
     enabled: ${AUDIT_ERROR_ALERT_ENABLED:true}
-    endpoint: ${CENTRALIZED_ALERT_URL:http://localhost:9001/api/v1/alert}
+    endpoint: ${CENTRALIZED_ALERT_URL:http://localhost:9003/api/v1/alert}
     sender-email: ${AUDIT_ERROR_ALERT_SENDER_EMAIL:audit-log@example.com}
     sender-name: ${AUDIT_ERROR_ALERT_SENDER_NAME:Audit Log Service}
     recipients: ${AUDIT_ERROR_ALERT_RECIPIENTS:ops@example.com}

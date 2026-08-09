@@ -100,7 +100,7 @@ Copy values from `.env.example` to your local environment. Important variables:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `SERVER_PORT` | `9003` | HTTP port |
+| `SERVER_PORT` | `9004` | HTTP port |
 | `DB_URL` | `jdbc:postgresql://localhost:5432/audit_log` | PostgreSQL connection |
 | `KAFKA_BOOTSTRAP_SERVERS` | `localhost:9092` | Kafka brokers |
 | `AUDIT_KAFKA_TOPIC` | `centralized-audit.requested` | Ingestion topic |
@@ -108,7 +108,7 @@ Copy values from `.env.example` to your local environment. Important variables:
 | `AUDIT_KAFKA_MAX_RETRIES` | `2` | Retries after the first listener attempt |
 | `AUDIT_QUERY_MAX_RANGE` | `P31D` | Maximum REST query time range |
 | `AUDIT_ERROR_ALERT_ENABLED` | `true` | Enable centralized error alerts |
-| `CENTRALIZED_ALERT_URL` | `http://localhost:9001/api/v1/alert` | Central alert API endpoint |
+| `CENTRALIZED_ALERT_URL` | `http://localhost:9003/api/v1/alert` | Central alert API endpoint |
 | `AUDIT_ERROR_ALERT_RECIPIENTS` | `ops@example.com` | Comma-separated alert recipients |
 | `AUDIT_ERROR_ALERT_AUTHORIZATION_HEADER` | empty | Full outbound Authorization header |
 | `OAUTH2_ISSUER_URI` | `http://localhost:9005` | `usermanagement` JWT issuer |
@@ -212,7 +212,7 @@ Build JAR terlebih dahulu, kemudian buat runtime image Java 21:
 ```bash
 mvn clean package
 docker build -t audit-log:1.0.0 .
-docker run --rm --env-file .env -p 9003:9003 audit-log:1.0.0
+docker run --rm --env-file .env -p 9004:9004 audit-log:1.0.0
 ```
 
 Isi `.env` dari `.env.example`. Gunakan hostname service pada Docker network untuk PostgreSQL,

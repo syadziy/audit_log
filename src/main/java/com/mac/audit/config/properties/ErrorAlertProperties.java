@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties("audit.error-alert")
 public record ErrorAlertProperties(
         @DefaultValue("true") boolean enabled,
-        @DefaultValue("http://localhost:9001/api/v1/alert") URI endpoint,
+        @DefaultValue("http://localhost:9003/api/v1/alert") URI endpoint,
         @DefaultValue("audit-log@example.com") String senderEmail,
         @DefaultValue("Audit Log Service") String senderName,
         @DefaultValue("ops@example.com") List<String> recipients,
