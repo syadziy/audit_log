@@ -50,7 +50,7 @@ HTTP 5xx / exhausted Kafka failure
 
 Investigator / monitoring client
     -> JWT-protected REST API
-    -> AuditLogController
+    -> AuditLogController (`PERM_audit:read`)
     -> filtered, paginated read
 ```
 

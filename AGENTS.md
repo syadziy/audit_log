@@ -65,6 +65,8 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 - Application persistence is append-only. Do not add update/delete operations without an approved
   retention, correction, and authorization design.
 - Keep controllers thin: parse/validate filters, delegate, and wrap responses.
+- Put `@PreAuthorize` with `PERM_<resource>:<action>` on protected controller endpoint methods.
+  Service implementations must not carry HTTP endpoint authorization annotations.
 - Keep SQL in repository implementations and use named parameters.
 - Use `INSERT ... ON CONFLICT DO NOTHING` for at-least-once Kafka delivery.
 - Keep query time ranges bounded and paginated.

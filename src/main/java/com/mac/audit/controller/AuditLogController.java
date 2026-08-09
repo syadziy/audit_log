@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,11 +39,13 @@ public class AuditLogController {
     }
 
     @GetMapping("/{eventId}")
+    @PreAuthorize("hasAuthority('PERM_audit:read')")
     public ResponseEntity<ResponseDTO<AuditLogResponse>> findById(@PathVariable UUID eventId) {
         return ResponseHelper.httpOK(service.findById(eventId));
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('PERM_audit:read')")
     public ResponseEntity<ResponseDTO<List<AuditLogResponse>>> find(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
