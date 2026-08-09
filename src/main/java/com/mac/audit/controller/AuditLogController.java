@@ -7,8 +7,9 @@ import com.mac.audit.entities.model.AuditLogFilter;
 import com.mac.audit.service.AuditLogService;
 import com.mac.sdk_util.entities.dto.PagingDTO;
 import com.mac.sdk_util.entities.dto.ResponseDTO;
-import com.mac.sdk_util.utils.ResponseHelper;
-import com.mac.sdk_util.utils.ResponsePagingHelper;
+import com.mac.sdk_util.entities.constant.Role;
+import com.mac.sdk_util.helper.ResponseHelper;
+import com.mac.sdk_util.helper.ResponsePagingHelper;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.time.*;
@@ -39,13 +40,13 @@ public class AuditLogController {
     }
 
     @GetMapping("/{eventId}")
-    @PreAuthorize("hasAuthority('PERM_audit:read')")
+    @PreAuthorize(Role.AUDIT_READ)
     public ResponseEntity<ResponseDTO<AuditLogResponse>> findById(@PathVariable UUID eventId) {
         return ResponseHelper.httpOK(service.findById(eventId));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('PERM_audit:read')")
+    @PreAuthorize(Role.AUDIT_READ)
     public ResponseEntity<ResponseDTO<List<AuditLogResponse>>> find(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
