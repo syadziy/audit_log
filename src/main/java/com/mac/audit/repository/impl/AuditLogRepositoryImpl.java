@@ -9,6 +9,7 @@ import com.mac.audit.entities.model.AuditLogFilter;
 import com.mac.audit.repository.AuditLogRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +49,8 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
                 """, new MapSqlParameterSource()
                 .addValue("eventId", entry.eventId())
                 .addValue("sourceSystem", entry.sourceSystem())
-                .addValue("occurredAt", entry.occurredAt())
-                .addValue("receivedAt", entry.receivedAt())
+                .addValue("occurredAt", Timestamp.from(entry.occurredAt()))
+                .addValue("receivedAt", Timestamp.from(entry.receivedAt()))
                 .addValue("actorId", entry.actorId())
                 .addValue("actorName", entry.actorName())
                 .addValue("action", entry.action())
@@ -91,7 +92,7 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
     private Query buildFilter(AuditLogFilter filter) {
         StringBuilder sql = new StringBuilder(FILTER_BASE);
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("from", filter.from()).addValue("to", filter.to());
+                .addValue("from", Timestamp.from(filter.from())).addValue("to", Timestamp.from(filter.to()));
         List<String> predicates = new ArrayList<>();
         add(predicates, parameters, "source_system = :sourceSystem", "sourceSystem", filter.sourceSystem());
         add(predicates, parameters, "actor_id = :actorId", "actorId", filter.actorId());
