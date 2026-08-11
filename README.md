@@ -220,6 +220,16 @@ Kafka, dan `centralized_alert`; jangan gunakan `localhost` untuk dependency cont
 
 ## Operational notes
 
+- Horizontal scaling menggunakan satu `KAFKA_CONSUMER_GROUP` yang sama pada seluruh replika.
+  Jangan membuat group ID per pod karena setiap group akan menyimpan salinan event yang sama.
+- Jumlah consumer aktif maksimal mengikuti jumlah partition topic. Kapasitas efektif adalah nilai
+  terendah antara jumlah partition dan `replicas × KAFKA_CONSUMER_CONCURRENCY`; tambah partition
+  sebelum menambah replika jika seluruh consumer sudah terpakai.
+- Semua replika harus memakai PostgreSQL dan Kafka topic yang sama. Primary key `event_id` serta
+  `INSERT ... ON CONFLICT DO NOTHING` menjaga idempotensi saat rebalance atau redelivery terjadi.
+- Hitung batas koneksi PostgreSQL sebagai `replicas × DB_POOL_MAX_SIZE`, lalu sisakan koneksi untuk
+  Flyway dan operasi administratif. Shutdown Spring yang graceful memberi waktu consumer
+  menyelesaikan record sebelum partition dipindahkan ke replika lain.
 - Path `/internal/**` tidak memerlukan JWT dan hanya boleh tersedia pada trusted internal network;
   public ingress dan API Gateway tidak boleh membuat route ke path tersebut.
 - Rows are append-only from the application perspective; there are no update or delete APIs.
