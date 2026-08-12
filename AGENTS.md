@@ -95,6 +95,11 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 
 ## Audit data and privacy
 
+- Simpan `action`, `resourceType`, dan metadata producer tanpa menafsirkan ulang nilainya.
+  `resourceType` merepresentasikan service/route dan digunakan frontend sebagai kolom Service.
+- Pertahankan metadata gateway `httpMethod`, normalized `httpPath`, `httpStatus`, `routeId`,
+  `requiredPermission`, dan `tenantId` jika dikirim. Metadata ini membedakan endpoint yang dapat
+  memiliki action atau service sama.
 - Never place passwords, JWTs, API keys, authorization headers, card data, secrets, or complete
   request/response bodies in audit metadata.
 - Logs may contain audit event ID, source system, action, outcome, Kafka coordinates, and duplicate
@@ -109,6 +114,9 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 
 - All SDK-owned and service-owned client messages must be English.
 - Use `ResponseHelper` and `ResponsePagingHelper`; do not create a second response envelope.
+- Response list wajib mengembalikan `paging.limit`, `paging.offset`, dan `paging.total_record`.
+  `total_record` adalah hasil count seluruh record yang cocok dengan filter sebelum `LIMIT` dan
+  `OFFSET`, bukan jumlah row pada page aktif.
 - Reuse SDK `ResourceNotFoundException` and global REST exception handling.
 - `date` cannot be combined with `from` or `to`.
 - `from` must be earlier than `to`, and the range cannot exceed `audit.query.max-range`.
