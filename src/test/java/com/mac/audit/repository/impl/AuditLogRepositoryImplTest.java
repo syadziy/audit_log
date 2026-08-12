@@ -48,13 +48,23 @@ class AuditLogRepositoryImplTest {
         when(jdbc.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
                 .thenAnswer(invocation -> List.of(invocation.<RowMapper<AuditLogEntry>>getArgument(2)
                         .mapRow(resultSet(entry, ""), 0)));
+        ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
         AuditLogFilter all = new AuditLogFilter(NOW.minusSeconds(60), NOW.plusSeconds(1),
                 " billing ", " user-1 ", " invoice.created ", " invoice ", " 42 ",
                 AuditOutcome.SUCCESS, 20, 5);
         assertTrue(repository.find(all).getFirst().metadata().isEmpty());
-        AuditLogFilter noOptional = new AuditLogFilter(NOW.minusSeconds(60), NOW, " ", null,
+        AuditLogFilter outcomeOnly = new AuditLogFilter(null, null, null, null,
+                null, null, null, AuditOutcome.SUCCESS, 10, 0);
+        repository.find(outcomeOnly);
+        AuditLogFilter noOptional = new AuditLogFilter(null, null, " ", null,
                 null, null, null, null, 10, 0);
         repository.find(noOptional);
+        verify(jdbc, times(3)).query(sql.capture(), any(MapSqlParameterSource.class), any(RowMapper.class));
+        assertTrue(sql.getAllValues().get(0).contains("FROM audit_log WHERE occurred_at >= :from"));
+        assertTrue(sql.getAllValues().get(0).contains("AND source_system = :sourceSystem"));
+        assertTrue(sql.getAllValues().get(1).contains("FROM audit_log WHERE outcome = :outcome"));
+        assertFalse(sql.getAllValues().get(2).contains(" WHERE "));
+        assertFalse(sql.getAllValues().stream().anyMatch(value -> value.contains("FROM audit_log AND")));
         when(jdbc.queryForObject(anyString(), any(MapSqlParameterSource.class), eq(Long.class)))
                 .thenReturn(4L, (Long) null);
         assertEquals(4, repository.count(all));

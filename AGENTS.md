@@ -68,6 +68,8 @@ Install `../sdk_util` with `mvn clean install` first when its artifact is unavai
 - Put `@PreAuthorize` with `PERM_<resource>:<action>` on protected controller endpoint methods.
   Service implementations must not carry HTTP endpoint authorization annotations.
 - Keep SQL in repository implementations and use named parameters.
+- Dynamic filter SQL must add `WHERE` before the first predicate and `AND` only between subsequent
+  predicates. Cover zero, one, and multiple predicate combinations with SQL-capture tests.
 - Use `INSERT ... ON CONFLICT DO NOTHING` for at-least-once Kafka delivery.
 - Keep query time ranges bounded and paginated.
 - Use UTC `Instant` internally and `ZoneId` only when resolving date filters.

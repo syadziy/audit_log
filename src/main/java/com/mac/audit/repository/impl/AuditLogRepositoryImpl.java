@@ -107,7 +107,9 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
             predicates.add("outcome = :outcome");
             parameters.addValue("outcome", filter.outcome().name());
         }
-        predicates.forEach(predicate -> sql.append(" AND ").append(predicate));
+        if (!predicates.isEmpty()) {
+            sql.append(" WHERE ").append(String.join(" AND ", predicates));
+        }
         return new Query(sql.toString(), parameters);
     }
 
