@@ -57,7 +57,7 @@ public class AuditLogController {
             @RequestParam(required = false) String resourceType,
             @RequestParam(required = false) String resourceId,
             @RequestParam(required = false) AuditOutcome outcome,
-            @RequestParam(defaultValue = "50") @Min(1) @Max(200) int limit,
+            @RequestParam(defaultValue = "50") @Min(1) @Max(500) int limit,
             @RequestParam(defaultValue = "0") @Min(0) long offset) {
         AuditLogFilter filter = createFilter(date, from, to, sourceSystem, actorId, action,
                 resourceType, resourceId, outcome, limit, offset);
