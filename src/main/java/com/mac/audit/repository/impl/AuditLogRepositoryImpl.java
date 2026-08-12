@@ -25,7 +25,7 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
             event_id, source_system, occurred_at, received_at, actor_id, actor_name,
             action, resource_type, resource_id, outcome, trace_id, client_ip, metadata
             """;
-    private static final String FILTER_BASE = " FROM audit_log WHERE occurred_at >= :from AND occurred_at < :to";
+    private static final String BASE = " FROM audit_log";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
@@ -90,10 +90,14 @@ public class AuditLogRepositoryImpl implements AuditLogRepository {
     }
 
     private Query buildFilter(AuditLogFilter filter) {
-        StringBuilder sql = new StringBuilder(FILTER_BASE);
-        MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("from", Timestamp.from(filter.from())).addValue("to", Timestamp.from(filter.to()));
+        StringBuilder sql = new StringBuilder(BASE);
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
         List<String> predicates = new ArrayList<>();
+        if (filter.from() != null && filter.to() != null) {
+            predicates.add("occurred_at >= :from AND occurred_at < :to");
+            parameters.addValue("from", Timestamp.from(filter.from()));
+            parameters.addValue("to", Timestamp.from(filter.to()));
+        }
         add(predicates, parameters, "source_system = :sourceSystem", "sourceSystem", filter.sourceSystem());
         add(predicates, parameters, "actor_id = :actorId", "actorId", filter.actorId());
         add(predicates, parameters, "action = :action", "action", filter.action());

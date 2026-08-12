@@ -71,19 +71,20 @@ public class AuditLogController {
         if (date != null && (from != null || to != null)) {
             throw new IllegalArgumentException("date cannot be combined with from or to");
         }
-        Instant resolvedTo;
-        Instant resolvedFrom;
+        Instant resolvedTo = null;
+        Instant resolvedFrom = null;
         if (date != null) {
             resolvedFrom = date.atStartOfDay(applicationZone).toInstant();
             resolvedTo = date.plusDays(1).atStartOfDay(applicationZone).toInstant();
-        } else {
+        } else if (from != null || to != null) {
             resolvedTo = to == null ? clock.instant() : to;
             resolvedFrom = from == null ? resolvedTo.minus(Duration.ofDays(1)) : from;
         }
-        if (!resolvedFrom.isBefore(resolvedTo)) {
+        if (resolvedFrom != null && resolvedTo != null && !resolvedFrom.isBefore(resolvedTo)) {
             throw new IllegalArgumentException("from must be earlier than to");
         }
-        if (Duration.between(resolvedFrom, resolvedTo).compareTo(properties.maxRange()) > 0) {
+        if (resolvedFrom != null && resolvedTo != null
+                && Duration.between(resolvedFrom, resolvedTo).compareTo(properties.maxRange()) > 0) {
             throw new IllegalArgumentException("audit log range must not exceed " + properties.maxRange());
         }
         return new AuditLogFilter(resolvedFrom, resolvedTo, sourceSystem, actorId, action,

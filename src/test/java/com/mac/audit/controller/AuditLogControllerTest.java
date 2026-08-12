@@ -33,7 +33,8 @@ class AuditLogControllerTest {
         assertEquals(1, defaultResult.getBody().getPaging().getTotalRecord());
         var filter = org.mockito.ArgumentCaptor.forClass(AuditLogFilter.class);
         verify(service).find(filter.capture());
-        assertEquals(NOW.minus(Duration.ofDays(1)), filter.getValue().from());
+        assertNull(filter.getValue().from());
+        assertNull(filter.getValue().to());
 
         controller.find(LocalDate.of(2026, 1, 2), null, null, null, null, null,
                 null, null, null, 10, 2);
