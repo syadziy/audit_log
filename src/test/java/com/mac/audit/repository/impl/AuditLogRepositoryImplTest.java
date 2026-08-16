@@ -10,6 +10,7 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.*;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.*;
 import tools.jackson.core.JacksonException;
